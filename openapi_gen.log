@@ -1,0 +1,42 @@
+[main] WARN  o.o.codegen.DefaultCodegen - Generation using 3.1.0 specs is in development and is not officially supported yet. If you would like to expedite development, please consider woking on the open issues in the 3.1.0 project: https://github.com/orgs/OpenAPITools/projects/4/views/1 and reach out to our team on Slack at https://join.slack.com/t/openapi-generator/shared_invite/zt-12jxxd7p2-XUeQM~4pzsU9x~eGLQqX2g
+[main] INFO  o.o.codegen.DefaultGenerator - Generating with dryRun=false
+[main] INFO  o.o.c.ignore.CodegenIgnoreProcessor - Output directory (/local/sdk-python) does not exist, or is inaccessible. No file (.openapi-generator-ignore) will be evaluated.
+[main] INFO  o.o.codegen.DefaultGenerator - OpenAPI Generator: python (client)
+[main] INFO  o.o.codegen.DefaultGenerator - Generator 'python' is considered stable.
+[main] INFO  o.o.c.l.AbstractPythonCodegen - Environment variable PYTHON_POST_PROCESS_FILE not defined so the Python code may not be properly formatted. To define it, try 'export PYTHON_POST_PROCESS_FILE="/usr/local/bin/yapf -i"' (Linux/Mac)
+[main] INFO  o.o.c.l.AbstractPythonCodegen - NOTE: To enable file post-processing, 'enablePostProcessFile' must be set to `true` (--enable-post-process-file for CLI).
+[main] INFO  o.o.c.languages.PythonClientCodegen - Environment variable PYTHON_POST_PROCESS_FILE not defined so the Python code may not be properly formatted. To define it, try 'export PYTHON_POST_PROCESS_FILE="/usr/local/bin/yapf -i"' (Linux/Mac)
+[main] INFO  o.o.c.languages.PythonClientCodegen - NOTE: To enable file post-processing, 'enablePostProcessFile' must be set to `true` (--enable-post-process-file for CLI).
+[main] ERROR o.o.codegen.DefaultGenerator - An exception occurred in OpenAPI Normalizer. Please report the issue via https://github.com/openapitools/openapi-generator/issues/new/: 
+[main] ERROR o.o.codegen.DefaultGenerator - An exception occurred in OpenAPI Normalizer. Please report the issue via https://github.com/openapitools/openapi-generator/issues/new/: 
+java.util.NoSuchElementException
+	at java.base/java.util.LinkedHashMap$LinkedHashIterator.nextNode(Unknown Source)
+	at java.base/java.util.LinkedHashMap$LinkedKeyIterator.next(Unknown Source)
+	at org.openapitools.codegen.utils.ModelUtils.getType(ModelUtils.java:2141)
+	at org.openapitools.codegen.utils.ModelUtils.isArraySchema(ModelUtils.java:594)
+	at org.openapitools.codegen.OpenAPINormalizer.normalizeSchema(OpenAPINormalizer.java:512)
+	at org.openapitools.codegen.OpenAPINormalizer.normalizeAnyOf(OpenAPINormalizer.java:659)
+	at org.openapitools.codegen.OpenAPINormalizer.normalizeSchema(OpenAPINormalizer.java:522)
+	at org.openapitools.codegen.OpenAPINormalizer.normalizeParameters(OpenAPINormalizer.java:417)
+	at org.openapitools.codegen.OpenAPINormalizer.normalizePaths(OpenAPINormalizer.java:329)
+	at org.openapitools.codegen.OpenAPINormalizer.normalize(OpenAPINormalizer.java:286)
+	at org.openapitools.codegen.DefaultGenerator.configureGeneratorProperties(DefaultGenerator.java:279)
+	at org.openapitools.codegen.DefaultGenerator.generate(DefaultGenerator.java:1289)
+	at org.openapitools.codegen.cmd.Generate.execute(Generate.java:535)
+	at org.openapitools.codegen.cmd.OpenApiGeneratorCommand.run(OpenApiGeneratorCommand.java:32)
+	at org.openapitools.codegen.OpenAPIGenerator.main(OpenAPIGenerator.java:66)
+Exception in thread "main" java.util.NoSuchElementException
+	at java.base/java.util.LinkedHashMap$LinkedHashIterator.nextNode(Unknown Source)
+	at java.base/java.util.LinkedHashMap$LinkedKeyIterator.next(Unknown Source)
+	at org.openapitools.codegen.utils.ModelUtils.getType(ModelUtils.java:2141)
+	at org.openapitools.codegen.utils.ModelUtils.isArraySchema(ModelUtils.java:594)
+	at org.openapitools.codegen.InlineModelResolver.gatherInlineModels(InlineModelResolver.java:341)
+	at org.openapitools.codegen.InlineModelResolver.gatherInlineModels(InlineModelResolver.java:407)
+	at org.openapitools.codegen.InlineModelResolver.flattenParameters(InlineModelResolver.java:531)
+	at org.openapitools.codegen.InlineModelResolver.flattenPaths(InlineModelResolver.java:148)
+	at org.openapitools.codegen.InlineModelResolver.flatten(InlineModelResolver.java:108)
+	at org.openapitools.codegen.DefaultGenerator.configureGeneratorProperties(DefaultGenerator.java:292)
+	at org.openapitools.codegen.DefaultGenerator.generate(DefaultGenerator.java:1289)
+	at org.openapitools.codegen.cmd.Generate.execute(Generate.java:535)
+	at org.openapitools.codegen.cmd.OpenApiGeneratorCommand.run(OpenApiGeneratorCommand.java:32)
+	at org.openapitools.codegen.OpenAPIGenerator.main(OpenAPIGenerator.java:66)

@@ -1,0 +1,15 @@
+.openapi-generator-ignore
+apis/LegacyApi.ts
+apis/V1Api.ts
+apis/index.ts
+docs/HTTPValidationError.md
+docs/LegacyApi.md
+docs/LocationInner.md
+docs/V1Api.md
+docs/ValidationError.md
+index.ts
+models/HTTPValidationError.ts
+models/LocationInner.ts
+models/ValidationError.ts
+models/index.ts
+runtime.ts

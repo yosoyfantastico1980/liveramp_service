@@ -1,0 +1,1380 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "PulsePoint LiveRamp Service",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/v1/health": {
+      "get": {
+        "tags": [
+          "v1"
+        ],
+        "summary": "Health",
+        "operationId": "health_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ready": {
+      "get": {
+        "tags": [
+          "v1"
+        ],
+        "summary": "Ready",
+        "description": "Dependency-aware readiness check.\n- Verifies required env/config is present\n- Verifies we can fetch a LiveRamp OAuth token\n- Verifies LiveRamp API connectivity with a lightweight call",
+        "operationId": "ready_v1_ready_get",
+        "parameters": [
+          {
+            "name": "X-LR-Org-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "title": "X-Lr-Org-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/liveramp/destinations": {
+      "get": {
+        "tags": [
+          "v1"
+        ],
+        "summary": "List Destinations",
+        "operationId": "list_destinations_v1_liveramp_destinations_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 1,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "title": "After",
+              "description": "Pagination cursor from prior response _pagination.after"
+            },
+            "description": "Pagination cursor from prior response _pagination.after"
+          },
+          {
+            "name": "X-LR-Org-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "title": "X-Lr-Org-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DestinationsResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/liveramp/segments": {
+      "get": {
+        "tags": [
+          "v1"
+        ],
+        "summary": "List First Party Segments",
+        "operationId": "list_first_party_segments_v1_liveramp_segments_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 2000,
+              "minimum": 10,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "title": "After",
+              "description": "Pagination cursor from prior response _pagination.after"
+            },
+            "description": "Pagination cursor from prior response _pagination.after"
+          },
+          {
+            "name": "X-LR-Org-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "title": "X-Lr-Org-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SegmentsResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/liveramp/marketplace/segments": {
+      "get": {
+        "tags": [
+          "v1"
+        ],
+        "summary": "List Marketplace Segments",
+        "operationId": "list_marketplace_segments_v1_liveramp_marketplace_segments_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 5,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "countryCodes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "nullable": true,
+              "title": "Countrycodes",
+              "default": [
+                "USA"
+              ]
+            }
+          },
+          {
+            "name": "currencyCodes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "nullable": true,
+              "title": "Currencycodes",
+              "default": [
+                "USD"
+              ]
+            }
+          },
+          {
+            "name": "identifierType",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "nullable": true,
+              "title": "Identifiertype",
+              "default": [
+                "COOKIE"
+              ]
+            }
+          },
+          {
+            "name": "X-LR-Org-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "title": "X-Lr-Org-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/liveramp/marketplace/segments/detail": {
+      "get": {
+        "tags": [
+          "v1"
+        ],
+        "summary": "Marketplace Segments Detail",
+        "operationId": "marketplace_segments_detail_v1_liveramp_marketplace_segments_detail_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "ids",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "title": "Ids"
+            }
+          },
+          {
+            "name": "X-LR-Org-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "title": "X-Lr-Org-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/liveramp/requested-segments": {
+      "post": {
+        "tags": [
+          "v1"
+        ],
+        "summary": "Request Segments For Activation",
+        "operationId": "request_segments_for_activation_v1_liveramp_requested_segments_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-LR-Org-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "title": "X-Lr-Org-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "title": "Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/liveramp/segment-statuses": {
+      "get": {
+        "tags": [
+          "v1"
+        ],
+        "summary": "Segment Statuses",
+        "operationId": "segment_statuses_v1_liveramp_segment_statuses_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "segmentIDs",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "title": "Segmentids"
+            }
+          },
+          {
+            "name": "segmentType",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "DATA_MARKETPLACE",
+              "title": "Segmenttype"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 1,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "X-LR-Org-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "title": "X-Lr-Org-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/liveramp/deliveries": {
+      "get": {
+        "tags": [
+          "v1"
+        ],
+        "summary": "Deliveries",
+        "operationId": "deliveries_v1_liveramp_deliveries_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "integrationConnectionID",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Integrationconnectionid"
+            }
+          },
+          {
+            "name": "X-LR-Org-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "title": "X-Lr-Org-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "legacy"
+        ],
+        "summary": "Health Legacy",
+        "operationId": "health_legacy_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "deprecated": true,
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/liveramp/destinations": {
+      "get": {
+        "tags": [
+          "legacy"
+        ],
+        "summary": "Destinations Legacy",
+        "operationId": "destinations_legacy_liveramp_destinations_get",
+        "deprecated": true,
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 1,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "title": "After"
+            }
+          },
+          {
+            "name": "X-LR-Org-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "title": "X-Lr-Org-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/liveramp/segments": {
+      "get": {
+        "tags": [
+          "legacy"
+        ],
+        "summary": "Segments Legacy",
+        "operationId": "segments_legacy_liveramp_segments_get",
+        "deprecated": true,
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 2000,
+              "minimum": 10,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "title": "After"
+            }
+          },
+          {
+            "name": "X-LR-Org-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "title": "X-Lr-Org-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/liveramp/marketplace/segments": {
+      "get": {
+        "tags": [
+          "legacy"
+        ],
+        "summary": "Marketplace Segments Legacy",
+        "operationId": "marketplace_segments_legacy_liveramp_marketplace_segments_get",
+        "deprecated": true,
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 5,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "countryCodes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "nullable": true,
+              "title": "Countrycodes",
+              "default": [
+                "USA"
+              ]
+            }
+          },
+          {
+            "name": "currencyCodes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "nullable": true,
+              "title": "Currencycodes",
+              "default": [
+                "USD"
+              ]
+            }
+          },
+          {
+            "name": "identifierType",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "nullable": true,
+              "title": "Identifiertype",
+              "default": [
+                "COOKIE"
+              ]
+            }
+          },
+          {
+            "name": "X-LR-Org-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "title": "X-Lr-Org-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/liveramp/marketplace/segments/detail": {
+      "get": {
+        "tags": [
+          "legacy"
+        ],
+        "summary": "Marketplace Detail Legacy",
+        "operationId": "marketplace_detail_legacy_liveramp_marketplace_segments_detail_get",
+        "deprecated": true,
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "ids",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "title": "Ids"
+            }
+          },
+          {
+            "name": "X-LR-Org-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "title": "X-Lr-Org-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/liveramp/requested-segments": {
+      "post": {
+        "tags": [
+          "legacy"
+        ],
+        "summary": "Requested Segments Legacy",
+        "operationId": "requested_segments_legacy_liveramp_requested_segments_post",
+        "deprecated": true,
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-LR-Org-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "title": "X-Lr-Org-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "title": "Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/liveramp/segment-statuses": {
+      "get": {
+        "tags": [
+          "legacy"
+        ],
+        "summary": "Segment Statuses Legacy",
+        "operationId": "segment_statuses_legacy_liveramp_segment_statuses_get",
+        "deprecated": true,
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "segmentIDs",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "title": "Segmentids"
+            }
+          },
+          {
+            "name": "segmentType",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "DATA_MARKETPLACE",
+              "title": "Segmenttype"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 1,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "X-LR-Org-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "title": "X-Lr-Org-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/liveramp/deliveries": {
+      "get": {
+        "tags": [
+          "legacy"
+        ],
+        "summary": "Deliveries Legacy",
+        "operationId": "deliveries_legacy_liveramp_deliveries_get",
+        "deprecated": true,
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "integrationConnectionID",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Integrationconnectionid"
+            }
+          },
+          {
+            "name": "X-LR-Org-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "title": "X-Lr-Org-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Destination": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true,
+            "title": "Name"
+          },
+          "logoUrl": {
+            "type": "string",
+            "nullable": true,
+            "title": "Logourl"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "title": "Destination"
+      },
+      "DestinationsResponse": {
+        "properties": {
+          "v2/Destinations": {
+            "items": {
+              "$ref": "#/components/schemas/Destination"
+            },
+            "type": "array",
+            "title": "V2/Destinations"
+          },
+          "_pagination": {
+            "$ref": "#/components/schemas/Pagination",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "DestinationsResponse",
+        "description": "LiveRamp returns a top-level key literally named 'v2/Destinations'.\nWe map that to a pythonic `destinations` field via alias."
+      },
+      "ErrorDetail": {
+        "properties": {
+          "status": {
+            "type": "integer",
+            "title": "Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "title": "ErrorDetail"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorDetail"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Pagination": {
+        "properties": {
+          "after": {
+            "type": "string",
+            "nullable": true,
+            "title": "After"
+          },
+          "total": {
+            "type": "integer",
+            "nullable": true,
+            "title": "Total"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "Pagination",
+        "description": "LiveRamp pagination envelope is usually:\n  {\"after\": \"...\", \"total\": 348}"
+      },
+      "Segment": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true,
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true,
+            "title": "Name"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "Segment",
+        "description": "Keep this loose; LiveRamp segment objects can vary by endpoint."
+      },
+      "SegmentsResponse": {
+        "properties": {
+          "v2/Segments": {
+            "items": {
+              "$ref": "#/components/schemas/Segment"
+            },
+            "type": "array",
+            "title": "V2/Segments"
+          },
+          "_pagination": {
+            "$ref": "#/components/schemas/Pagination",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "SegmentsResponse",
+        "description": "Segment list key can vary by LiveRamp endpoint/version.\nWe'll support the common patterns without you having to be perfect upfront."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "APIKeyHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-PP-API-Key"
+      }
+    }
+  }
+}
