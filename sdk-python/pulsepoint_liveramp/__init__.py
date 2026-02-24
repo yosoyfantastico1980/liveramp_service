@@ -16,29 +16,182 @@
 
 __version__ = "1.0.0"
 
+# Define package exports
+__all__ = [
+    "LegacyApi",
+    "V1Api",
+    "ApiResponse",
+    "ApiClient",
+    "Configuration",
+    "OpenApiException",
+    "ApiTypeError",
+    "ApiValueError",
+    "ApiKeyError",
+    "ApiAttributeError",
+    "ApiException",
+    "CountryCode",
+    "CurrencyCode",
+    "Delivery",
+    "DeliveryListResponse",
+    "Destination",
+    "DestinationListResponse",
+    "HTTPValidationError",
+    "IdentifierType",
+    "LocationInner",
+    "MarketplacePricing",
+    "MarketplaceSegment",
+    "MarketplaceSegmentDetail",
+    "MarketplaceSegmentDetailResponse",
+    "MarketplaceSegmentListResponse",
+    "Pagination",
+    "RequestedSegmentInput",
+    "RequestedSegmentResult",
+    "RequestedSegmentsRequest",
+    "RequestedSegmentsResponse",
+    "Segment",
+    "SegmentListResponse",
+    "SegmentStatus",
+    "SegmentStatusListResponse",
+    "SegmentType",
+    "ValidationError",
+]
+
 # import apis into sdk package
-from pulsepoint_liveramp.api.legacy_api import LegacyApi
-from pulsepoint_liveramp.api.v1_api import V1Api
+from pulsepoint_liveramp.api.legacy_api import LegacyApi as LegacyApi
+from pulsepoint_liveramp.api.v1_api import V1Api as V1Api
 
 # import ApiClient
-from pulsepoint_liveramp.api_response import ApiResponse
-from pulsepoint_liveramp.api_client import ApiClient
-from pulsepoint_liveramp.configuration import Configuration
-from pulsepoint_liveramp.exceptions import OpenApiException
-from pulsepoint_liveramp.exceptions import ApiTypeError
-from pulsepoint_liveramp.exceptions import ApiValueError
-from pulsepoint_liveramp.exceptions import ApiKeyError
-from pulsepoint_liveramp.exceptions import ApiAttributeError
-from pulsepoint_liveramp.exceptions import ApiException
+from pulsepoint_liveramp.api_response import ApiResponse as ApiResponse
+from pulsepoint_liveramp.api_client import ApiClient as ApiClient
+from pulsepoint_liveramp.configuration import Configuration as Configuration
+from pulsepoint_liveramp.exceptions import OpenApiException as OpenApiException
+from pulsepoint_liveramp.exceptions import ApiTypeError as ApiTypeError
+from pulsepoint_liveramp.exceptions import ApiValueError as ApiValueError
+from pulsepoint_liveramp.exceptions import ApiKeyError as ApiKeyError
+from pulsepoint_liveramp.exceptions import ApiAttributeError as ApiAttributeError
+from pulsepoint_liveramp.exceptions import ApiException as ApiException
 
 # import models into sdk package
-from pulsepoint_liveramp.models.destination import Destination
-from pulsepoint_liveramp.models.destinations_response import DestinationsResponse
-from pulsepoint_liveramp.models.error_detail import ErrorDetail
-from pulsepoint_liveramp.models.error_response import ErrorResponse
-from pulsepoint_liveramp.models.http_validation_error import HTTPValidationError
-from pulsepoint_liveramp.models.location_inner import LocationInner
-from pulsepoint_liveramp.models.pagination import Pagination
-from pulsepoint_liveramp.models.segment import Segment
-from pulsepoint_liveramp.models.segments_response import SegmentsResponse
-from pulsepoint_liveramp.models.validation_error import ValidationError
+from pulsepoint_liveramp.models.country_code import CountryCode as CountryCode
+from pulsepoint_liveramp.models.currency_code import CurrencyCode as CurrencyCode
+from pulsepoint_liveramp.models.delivery import Delivery as Delivery
+from pulsepoint_liveramp.models.delivery_list_response import DeliveryListResponse as DeliveryListResponse
+from pulsepoint_liveramp.models.destination import Destination as Destination
+from pulsepoint_liveramp.models.destination_list_response import DestinationListResponse as DestinationListResponse
+from pulsepoint_liveramp.models.http_validation_error import HTTPValidationError as HTTPValidationError
+from pulsepoint_liveramp.models.identifier_type import IdentifierType as IdentifierType
+from pulsepoint_liveramp.models.location_inner import LocationInner as LocationInner
+from pulsepoint_liveramp.models.marketplace_pricing import MarketplacePricing as MarketplacePricing
+from pulsepoint_liveramp.models.marketplace_segment import MarketplaceSegment as MarketplaceSegment
+from pulsepoint_liveramp.models.marketplace_segment_detail import MarketplaceSegmentDetail as MarketplaceSegmentDetail
+from pulsepoint_liveramp.models.marketplace_segment_detail_response import MarketplaceSegmentDetailResponse as MarketplaceSegmentDetailResponse
+from pulsepoint_liveramp.models.marketplace_segment_list_response import MarketplaceSegmentListResponse as MarketplaceSegmentListResponse
+from pulsepoint_liveramp.models.pagination import Pagination as Pagination
+from pulsepoint_liveramp.models.requested_segment_input import RequestedSegmentInput as RequestedSegmentInput
+from pulsepoint_liveramp.models.requested_segment_result import RequestedSegmentResult as RequestedSegmentResult
+from pulsepoint_liveramp.models.requested_segments_request import RequestedSegmentsRequest as RequestedSegmentsRequest
+from pulsepoint_liveramp.models.requested_segments_response import RequestedSegmentsResponse as RequestedSegmentsResponse
+from pulsepoint_liveramp.models.segment import Segment as Segment
+from pulsepoint_liveramp.models.segment_list_response import SegmentListResponse as SegmentListResponse
+from pulsepoint_liveramp.models.segment_status import SegmentStatus as SegmentStatus
+from pulsepoint_liveramp.models.segment_status_list_response import SegmentStatusListResponse as SegmentStatusListResponse
+from pulsepoint_liveramp.models.segment_type import SegmentType as SegmentType
+from pulsepoint_liveramp.models.validation_error import ValidationError as ValidationError
+
+from typing import Optional
+import time  # ✅ ADD THIS
+
+from . import Configuration, ApiClient
+from .api.v1_api import V1Api
+
+
+class PulsePointLiveRampClient:
+    def __init__(
+        self,
+        host: str,
+        org_id: str,
+        timeout: int = 30,
+    ):
+        self.config = Configuration(host=host)
+        self.config.timeout = timeout
+
+        self.api_client = ApiClient(self.config)
+        self.api_client.default_headers["X-LR-Org-Id"] = org_id
+
+        self.client = V1Api(self.api_client)
+
+    # --- Clean Methods ---
+
+    def list_destinations(self, limit: int = 10):
+        return self.client.list_destinations(limit=limit)
+
+    def list_marketplace_segments(self, limit: int = 10):
+        return self.client.list_marketplace_segments(limit=limit)
+
+    def get_marketplace_segment_detail(self, ids: list[int]):
+        return self.client.get_marketplace_segment_detail(ids=ids)
+
+    def request_segments(self, payload: dict):
+        return self.client.request_segments(
+            requested_segments_request=payload
+        )
+
+    def get_segment_statuses(
+        self,
+        segment_type: str,
+        segment_ids: list[int],
+        limit: int = 10,
+    ):
+        return self.client.get_segment_statuses(
+            segment_type=segment_type,
+            segment_ids=segment_ids,
+            limit=limit,
+        )
+
+    # --- High-Level Helper ---
+
+    def enable_segment_and_wait(
+        self,
+        segment_id: int,
+        destination_id: int,
+        segment_type: str = "DATA_MARKETPLACE",
+        poll_interval: int = 5,
+        timeout: int = 300,
+    ):
+        """
+        Enable a segment and wait until activation completes.
+        """
+
+        # Step 1 — Request activation
+        self.request_segments(
+            payload={
+                "segments": [
+                    {
+                        "segment_id": str(segment_id),
+                        "destination_id": str(destination_id),
+                    }
+                ]
+            }
+        )
+
+        start = time.time()
+
+        while True:
+            response = self.get_segment_statuses(
+                segment_type=segment_type,
+                segment_ids=[segment_id],
+                limit=1,
+            )
+
+            if response.statuses:
+                status = response.statuses[0].status
+
+                if status and status.upper() in ["ACTIVE", "DELIVERED", "SUCCESS"]:
+                    return response.statuses[0]
+
+            if time.time() - start > timeout:
+                raise TimeoutError(
+                    f"Segment {segment_id} did not activate within {timeout} seconds"
+                )
+
+            time.sleep(poll_interval)

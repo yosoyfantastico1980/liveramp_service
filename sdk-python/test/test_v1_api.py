@@ -61,6 +61,13 @@ class TestV1Api(unittest.TestCase):
         """
         pass
 
+    def test_list_segment_statuses_v1_liveramp_segment_statuses_get(self) -> None:
+        """Test case for list_segment_statuses_v1_liveramp_segment_statuses_get
+
+        List Segment Statuses
+        """
+        pass
+
     def test_marketplace_segments_detail_v1_liveramp_marketplace_segments_detail_get(self) -> None:
         """Test case for marketplace_segments_detail_v1_liveramp_marketplace_segments_detail_get
 
@@ -79,13 +86,6 @@ class TestV1Api(unittest.TestCase):
         """Test case for request_segments_for_activation_v1_liveramp_requested_segments_post
 
         Request Segments For Activation
-        """
-        pass
-
-    def test_segment_statuses_v1_liveramp_segment_statuses_get(self) -> None:
-        """Test case for segment_statuses_v1_liveramp_segment_statuses_get
-
-        Segment Statuses
         """
         pass
 

@@ -12,15 +12,30 @@
     Do not edit the class manually.
 """  # noqa: E501
 
-
 # import models into model package
+from pulsepoint_liveramp.models.country_code import CountryCode
+from pulsepoint_liveramp.models.currency_code import CurrencyCode
+from pulsepoint_liveramp.models.delivery import Delivery
+from pulsepoint_liveramp.models.delivery_list_response import DeliveryListResponse
 from pulsepoint_liveramp.models.destination import Destination
-from pulsepoint_liveramp.models.destinations_response import DestinationsResponse
-from pulsepoint_liveramp.models.error_detail import ErrorDetail
-from pulsepoint_liveramp.models.error_response import ErrorResponse
+from pulsepoint_liveramp.models.destination_list_response import DestinationListResponse
 from pulsepoint_liveramp.models.http_validation_error import HTTPValidationError
+from pulsepoint_liveramp.models.identifier_type import IdentifierType
 from pulsepoint_liveramp.models.location_inner import LocationInner
+from pulsepoint_liveramp.models.marketplace_pricing import MarketplacePricing
+from pulsepoint_liveramp.models.marketplace_segment import MarketplaceSegment
+from pulsepoint_liveramp.models.marketplace_segment_detail import MarketplaceSegmentDetail
+from pulsepoint_liveramp.models.marketplace_segment_detail_response import MarketplaceSegmentDetailResponse
+from pulsepoint_liveramp.models.marketplace_segment_list_response import MarketplaceSegmentListResponse
 from pulsepoint_liveramp.models.pagination import Pagination
+from pulsepoint_liveramp.models.requested_segment_input import RequestedSegmentInput
+from pulsepoint_liveramp.models.requested_segment_result import RequestedSegmentResult
+from pulsepoint_liveramp.models.requested_segments_request import RequestedSegmentsRequest
+from pulsepoint_liveramp.models.requested_segments_response import RequestedSegmentsResponse
 from pulsepoint_liveramp.models.segment import Segment
-from pulsepoint_liveramp.models.segments_response import SegmentsResponse
+from pulsepoint_liveramp.models.segment_list_response import SegmentListResponse
+from pulsepoint_liveramp.models.segment_status import SegmentStatus
+from pulsepoint_liveramp.models.segment_status_list_response import SegmentStatusListResponse
+from pulsepoint_liveramp.models.segment_type import SegmentType
 from pulsepoint_liveramp.models.validation_error import ValidationError
+
