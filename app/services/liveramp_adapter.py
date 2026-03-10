@@ -8,7 +8,7 @@ from models.liveramp import (
     SegmentListResponse,
     MarketplaceSegmentDetail,
     MarketplaceSegmentDetailResponse,
-    MarketplacePricing,   
+    MarketplacePricing,
     MarketplaceSegment,
     MarketplaceSegmentListResponse,
     RequestedSegmentInput,
@@ -17,9 +17,46 @@ from models.liveramp import (
     RequestedSegmentsResponse,
     SegmentStatus,
     SegmentStatusListResponse,
-    Delivery,                 # ✅ ADD
-    DeliveryListResponse,     # ✅ ADD
+    Delivery,
+    DeliveryListResponse,
+    ActivationState,
+    FirstPartyDistributionInput,    # ✅ ADD
+    FirstPartyDistributionRequest,  # ✅ ADD
+    FirstPartyDistributionResult,   # ✅ ADD
+    FirstPartyDistributionResponse, # ✅ ADD
 )
+
+# ----------------------------
+# Activation State Mapping
+# ----------------------------
+
+def map_liveramp_status_to_activation_state(lr_status: str) -> ActivationState:
+    if not lr_status:
+        return ActivationState.UNKNOWN
+
+    status = lr_status.upper()
+
+    # Taxonomy sync states
+    if status in ["SYNCED"]:
+        return ActivationState.ACTIVE
+
+    if status in ["NOT_SYNCED"]:
+        return ActivationState.PENDING
+
+    # Generic states
+    if status in ["REQUESTED", "PENDING", "PROCESSING"]:
+        return ActivationState.PENDING
+
+    if status in ["DELIVERING", "ACTIVE", "LIVE"]:
+        return ActivationState.ACTIVE
+
+    if status in ["FAILED", "ERROR", "REJECTED"]:
+        return ActivationState.FAILED
+
+    if status in ["PAUSED", "STOPPED"]:
+        return ActivationState.PAUSED
+
+    return ActivationState.UNKNOWN
 
 # ----------------------------
 # Destinations
@@ -38,11 +75,22 @@ def map_destinations_response(upstream: dict) -> DestinationListResponse:
         for d in raw_destinations
     ]
 
-    pagination = Pagination(
-        after=raw_pagination.get("after"),
-        total=raw_pagination.get("total"),
-    )
 
+    raw_total = raw_pagination.get("total")
+
+    if isinstance(raw_total, int):
+        normalized_total = raw_total
+    elif isinstance(raw_total, str) and raw_total.isdigit():
+        normalized_total = int(raw_total)
+    else:
+        normalized_total = None
+
+    pagination = {
+        "after": raw_pagination.get("after"),
+        "total": normalized_total,
+    }
+
+ 
     return DestinationListResponse(
         destinations=destinations,
         pagination=pagination,
@@ -54,7 +102,7 @@ def map_destinations_response(upstream: dict) -> DestinationListResponse:
 # ----------------------------
 
 def map_segments_response(upstream: dict) -> SegmentListResponse:
-    raw_segments = upstream.get("v2/Segments", [])
+    raw_segments = upstream.get("v3_Segments", [])
     raw_pagination = upstream.get("_pagination", {})
 
     segments = [
@@ -71,6 +119,11 @@ def map_segments_response(upstream: dict) -> SegmentListResponse:
         total=raw_pagination.get("total"),
     )
 
+    pagination = {
+        "after": upstream.get("after"),
+        "total": upstream.get("total"),
+    }
+
     return SegmentListResponse(
         segments=segments,
         pagination=pagination,
@@ -80,35 +133,42 @@ def map_marketplace_segments_response(upstream: dict) -> MarketplaceSegmentListR
     """
     Transforms raw LiveRamp marketplace segments response into
     our stable v1 API contract.
-
-    LiveRamp currently returns:
-    {
-      "v2/MarketplaceSegments": [...],
-      "_pagination": {...}
-    }
     """
 
-    raw_segments = upstream.get("v2/MarketplaceSegments", [])
+    raw_segments = upstream.get("v3_Segments", [])
     raw_pagination = upstream.get("_pagination", {})
 
-    segments = [
-        MarketplaceSegment(
-            id=str(s.get("id")),
-            name=str(s.get("name") or ""),
-            provider=s.get("provider"),
-        )
-        for s in raw_segments
-    ]
+    segments: List[MarketplaceSegment] = []
 
-    pagination = Pagination(
-        after=raw_pagination.get("after"),
-        total=raw_pagination.get("total"),
-    )
+    for s in raw_segments:
+        pricing = s.get("pricing", {})
+        digital_price = pricing.get("digitalAdTargeting", {})
+
+        segments.append(
+            MarketplaceSegment(
+                id=str(s.get("id")),
+                name=s.get("name", ""),
+                provider=s.get("providerName"),
+                description=s.get("description"),
+                segmentType=s.get("segmentType"),
+                providerComments=s.get("providerComments"),
+                identifierType=s.get("identifierType"),
+                updatedAt=s.get("updatedAt"),
+                countryCode=s.get("dataSourceLocation", {}).get("code"),
+                location=s.get("dataSourceLocation", {}).get("location"),
+                digitalAdTargetingPriceUSD=digital_price.get("value", {}).get("amount"),
+            )
+        )
 
     return MarketplaceSegmentListResponse(
         segments=segments,
-        pagination=pagination,
+        pagination={
+            "after": raw_pagination.get("after"),
+            "total": len(segments),
+        },
     )
+
+
 
 def map_requested_segments_request(
     request: RequestedSegmentsRequest,
@@ -132,14 +192,13 @@ def map_requested_segments_response(upstream: Any) -> RequestedSegmentsResponse:
     results = []
 
     for r in upstream or []:
-        segment_id = r.get("segmentId")
+        segment_id = r.get("id")          # was "segmentId"
         request_id = r.get("requestId")
 
-        # LiveRamp sometimes returns status as an object
         raw_status = r.get("status")
 
         if isinstance(raw_status, dict):
-            status = raw_status.get("error") or str(raw_status)
+            status = raw_status.get("message", "UNKNOWN")  # just get the message
         else:
             status = raw_status
 
@@ -154,6 +213,35 @@ def map_requested_segments_response(upstream: Any) -> RequestedSegmentsResponse:
     return RequestedSegmentsResponse(results=results)
 
 
+
+def map_first_party_distribution_request(request: FirstPartyDistributionRequest) -> list:
+    return [
+        {
+            "segmentID": str(seg.segment_id),                          # was "segmentId", must be string
+            "segmentType": "ONBOARDING",                               # required by LiveRamp for 1st party
+            "distributionManagerID": str(seg.destination_id),         # was "destinationId", must be string
+            **({"identifierType": seg.identifier_type.value} if seg.identifier_type else {})
+        }
+        for seg in request.segments
+    ]
+
+
+def map_first_party_distribution_response(upstream: Any, request: FirstPartyDistributionRequest) -> FirstPartyDistributionResponse:
+    results = []
+    for item in upstream:
+        status_obj = item.get("status", {})
+        # Match upstream result back to original request by segment_id
+        original = next((s for s in request.segments if s.segment_id == item.get("id")), None)
+        results.append(FirstPartyDistributionResult(
+            segment_id=item.get("id"),
+            destination_id=original.destination_id if original else None,
+            status=status_obj.get("message", "UNKNOWN"),
+            distribution_id=str(item.get("id")) if item.get("id") else None
+        ))
+    return FirstPartyDistributionResponse(results=results)
+
+
+
 def map_segment_statuses_response(upstream: dict) -> SegmentStatusListResponse:
     raw_statuses = upstream.get("v2/SegmentStatuses", [])
     raw_pagination = upstream.get("_pagination", {})
@@ -164,9 +252,10 @@ def map_segment_statuses_response(upstream: dict) -> SegmentStatusListResponse:
         statuses.append(
             SegmentStatus(
                 segment_id=int(s.get("segmentID")) if s.get("segmentID") else None,
-                destination_id=int(s.get("destinationID")) if s.get("destinationID") else None,
-                status=s.get("status"),
-                last_updated=s.get("lastUpdated"),
+                destination_id=s.get("integrationConnectionID"),
+                activation_state=map_liveramp_status_to_activation_state(
+                    s.get("taxonomy", {}).get("taxonomySyncStatus")
+                ),
             )
         )
 
@@ -186,11 +275,12 @@ def map_deliveries_response(upstream: dict) -> DeliveryListResponse:
 
     deliveries = [
         Delivery(
-            delivery_id=d.get("deliveryID"),
-            segment_id=d.get("segmentID"),
+            delivery_id=d.get("id"),
+            segment_id=None,
+            device_type=d.get("deviceType"),
             destination_id=d.get("integrationConnectionID"),
             status=d.get("status"),
-            created_at=d.get("createdAt"),
+            created_at=d.get("updatedAt"),
         )
         for d in raw_deliveries
     ]
@@ -215,7 +305,6 @@ def map_marketplace_segment_detail_response(
     raw_pagination = upstream.get("_pagination", {})
 
     segments = []
-
     for s in raw_segments:
 
         # Normalize pricing
@@ -253,10 +342,14 @@ def map_marketplace_segment_detail_response(
             )
         )
 
+    # 👇 OUTSIDE THE LOOP (4 spaces only)
+    total_count = len(segments)
+
     return MarketplaceSegmentDetailResponse(
         segments=segments,
-        pagination=Pagination(
-            after=raw_pagination.get("after"),
-            total=raw_pagination.get("total"),
-        ),
+        pagination={
+            "after": raw_pagination.get("after"),
+            "total": total_count,
+        },
     )
+

@@ -39,7 +39,7 @@ EXPOSE 8000
 # ---- Choose ONE of these depending on your app ----
 
 # FastAPI (recommended)
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 # If using Flask instead:
 # CMD ["python", "app.py"]
